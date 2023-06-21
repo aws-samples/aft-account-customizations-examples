@@ -235,8 +235,7 @@ In the "aft-account-customizations / account-type / api_helpers / terraform" fol
 │       ├── aft-providers.jinja
 │       ├── backend.jinja
 │       └── vpc.tf
-├── README.md
-└── flow.png
+└── README.md
 
 ```
 ## Deployment
