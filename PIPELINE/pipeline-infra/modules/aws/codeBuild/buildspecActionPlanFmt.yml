@@ -1,0 +1,16 @@
+version: 0.2
+
+phases:
+  pre_build:
+    on-failure: CONTINUE
+    commands:
+      - terraform fmt --recursive --check
+  build:
+    commands:
+      - cd ${TERRAFORM_PATH}
+      - terraform init
+      - terraform workspace select -or-create ${WORKSPACE}
+      - terraform plan -var-file=./inventory/${ENV}/global.tfvars --out tfplan.out
+artifacts:
+  files:
+    - '**/*'

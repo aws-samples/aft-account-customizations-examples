@@ -1,0 +1,9 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - cd ${TERRAFORM_PATH}
+      - terraform init
+      - terraform workspace select -or-create ${WORKSPACE}
+      - terraform apply tfplan.out

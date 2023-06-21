@@ -1,0 +1,7 @@
+terraform {
+ backend "s3" {
+   bucket = "backend-terraform-pipeline-${data.aws_caller_identity.current.account_id}"
+   key    = "pipeline/dev/terraform.tfstate"
+   region = "us-east-1"
+ }
+}

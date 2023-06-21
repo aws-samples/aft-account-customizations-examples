@@ -1,0 +1,16 @@
+## Global Variables
+aws_region  = "{{ provider_region }}"
+environment = "{{ environment }}"
+application_name = "{{ projectName }}"
+workloadAccess = "arn:aws:iam::{{ workloadAccount }}:role/AWSAFTExecution"
+
+# codeBuild
+terraform_path = "./"
+workloadAccount = "{{ workloadAccount }}"
+
+
+# pipeline
+source_branch_name        = "develop"
+source_repository_arn     = "arn:aws:codecommit:{{ provider_region }}:{{ pipelineAccount }}:{{ projectName }}-IAC-Repository"
+source_repository_name    = "{{ projectName }}-IAC-Repository"
+approve_comment           = "Looks good?"
