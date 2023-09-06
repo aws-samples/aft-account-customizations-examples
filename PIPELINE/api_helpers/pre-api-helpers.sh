@@ -1,6 +1,7 @@
 #!/bin/bash
 
 echo "Executing Pre-API Helpers"
+projectName=$(aws ssm get-parameter --name "/aft/account-request/custom-fields/project"  --query Parameter.Value --output text)
 echo "---------------------"
 echo "---------------------"
 echo "---------------------printenv---------------------"
@@ -27,14 +28,28 @@ echo "---------------------aws sts get-caller-identity---------------------"
 aws sts get-caller-identity
 echo "---------------------"
 echo "---------------------"
-echo "---------------------Download metadata from bucket---------------------"
 aftnumber=$(aws sts get-caller-identity --query Account --output text)
-aws s3 cp s3://aft-backend-$aftnumber-primary-region/account-number-pipeline/dev.txt dev.txt
-aws s3 cp s3://aft-backend-$aftnumber-primary-region/account-number-pipeline/hml.txt hml.txt
-aws s3 cp s3://aft-backend-$aftnumber-primary-region/account-number-pipeline/prd.txt prd.txt
-dev_account=$(cat dev.txt)
-hml_account=$(cat hml.txt)
-prd_account=$(cat prd.txt)
+echo "---------------------Get project members account  ---------------------"
+field="{\":project\":{\"S\":\"project\\\":\\\"$projectName\"}}"
+mails=$(aws dynamodb scan --table-name aft-request --filter-expression "contains(custom_fields,:project)"  --expression-attribute-values $field | jq '.Items[].id.S')
+for item in $mails; do
+        x="{\":email\":{\"S\":$item}}"
+        aws dynamodb scan --table-name aft-request-metadata --filter-expression " email = :email" --expression-attribute-values $x | jq -j '.Items[].id.S, ";" ,.Items[].account_customizations_name.S,"\n"' >> MembersAccounts.txt
+done
+mv MembersAccounts.txt $DEFAULT_PATH/$CUSTOMIZATION/terraform/MembersAccounts.txt
+
+echo "---------------------Create roles In account workload ---------------------"
+cat "$DEFAULT_PATH/$CUSTOMIZATION/terraform/MembersAccounts.txt"
+file="$DEFAULT_PATH/$CUSTOMIZATION/terraform/MembersAccounts.txt"
+while read -r line; do
+        workloadAccountId=$(echo $line | sed -r 's/\"//g' | cut -d';' -f1)
+        flavor="$(echo $line | sed -r 's/\"//g' |cut -d';' -f2)"
+        case $flavor in 
+        ("DEV") dev_account=$workloadAccountId ;;
+        ("HML")  hml_account=$workloadAccountId ;;
+        ("PRODUCTION") prd_account=$workloadAccountId ;;
+        esac
+done <$file
 echo "---------------------"
 echo "---------------------"
 echo "---------------------Creating Trust Policy to Pipeline Account have access to Workloads accounts---------------------"
