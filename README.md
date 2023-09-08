@@ -90,12 +90,12 @@ Pipeline accounts will be created with an AWS CodeCommit repository (to house th
 
 ## Creating cross-account roles
 
-During the creation of workload accounts, a file was generated for each environment (dev, hml and prd) containing the respective account ID. These files are used in this customization step.
+To find the workload accounts that should have the cross-account roles, the intelligence queries the **AFT DynamoDB** and collects the respective account IDs.
 
 In the "aft-account-customizations / PIPELINE / api_helpers" folder there is the `pre-api-helpers.sh` script, it will perform the following steps:
 
-- Will read the files with ID of Workload accounts
-
+- Query the DynamoDB **aft-request** table collecting the emails used to request accounts, using the Project name as a filter.
+- With the email list, a query is performed on the **aft-request-metadata** table collecting the account IDs and their type
 - For each Workload account:
 
    - The script will enter the workload account and change the trust policy of the role "AWSAFTExecution" allowing the pipeline account to assume
