@@ -256,6 +256,10 @@ In the "aft-account-customizations / account-type / api_helpers / terraform" fol
    - ipamapigtw = "Execution URL of CIDR MGMT API Gateway" (Ex. "https://id-gateway.execute-api.us-west-2.amazonaws.com/v0/")
    - ipamlambda = "Name of the lambda created in the CIDR MGMT deployment"
 
+## Credits
+
+This project was architected and developed by Lucas Lopes, Rubens Dias and Victor Okuhama.
+
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
